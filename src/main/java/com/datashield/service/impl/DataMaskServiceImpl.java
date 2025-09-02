@@ -17,8 +17,20 @@ public class DataMaskServiceImpl implements DataMaskService {
     public void startTask(Long taskId) {
         Runnable runnable = () -> {
             Task task = taskMapper.selectById(taskId);
-            //TODO: 实现数据脱敏
+            if (task.getIsRemote() == 0) {
+                maskLocalData(task);
+            } else {
+                maskRemoteData(task);
+            }
         };
         VirtualThreadPoolUtil.submit(runnable);
+    }
+
+    @Override
+    public void maskRemoteData(Task task) {
+    }
+
+    @Override
+    public void maskLocalData(Task task) {
     }
 }
