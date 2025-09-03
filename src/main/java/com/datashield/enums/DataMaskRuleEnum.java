@@ -13,9 +13,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum DataMaskRuleEnum {
-    ;
+    EMAIL_MASK(1, "邮箱脱敏"),
+    PHONE_MASK(2, "手机号脱敏"),
+    ID_CARD_MASK(3, "身份证脱敏"),
+    NAME_MASK(4, "姓名脱敏"),
+    CREDIT_CARD_MASK(5, "银行卡脱敏");
 
     private final int code;
+    private final String description;
 
     /**
      * 根据 code 获取对应的数据脱敏规则枚举类对象
