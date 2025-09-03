@@ -14,14 +14,14 @@ public interface DataMaskService {
     void startTask(Long taskId);
 
     /**
-     * 执行远程数据库脱敏任务
+     * 执行远程数据脱敏任务
      *
      * @param task 脱敏任务
      */
     void maskRemoteData(Task task);
 
     /**
-     * 执行本地数据库脱敏任务
+     * 执行本地数据脱敏任务
      *
      * @param task 脱敏任务
      */

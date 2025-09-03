@@ -17,8 +17,8 @@ public class UserSqlConnectionUtil {
      * 
      * @return 数据库连接
      */
-    public static Connection getConnection() throws SQLException {
-        String jdbcUrl = "jdbc:mysql://127.0.0.1:3306";
+    public static Connection getConnection(String dbName) throws SQLException {
+        String jdbcUrl = "jdbc:mysql://127.0.0.1:3306/" + dbName;
         String username = "root";
         String password = "123456";
         return DriverManager.getConnection(jdbcUrl, username, password);
