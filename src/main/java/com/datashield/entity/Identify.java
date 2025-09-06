@@ -29,7 +29,7 @@ public class Identify {
     /**
      * 识别名称
      */
-    private String identityName;
+    private String identifyName;
 
     /**
      * 是否远程数据库
@@ -49,7 +49,7 @@ public class Identify {
     /**
      * 字段名称
      */
-    private String colomns;
+    private String columns;
 
     /**
      * 状态, {@link TaskStatusEnum}

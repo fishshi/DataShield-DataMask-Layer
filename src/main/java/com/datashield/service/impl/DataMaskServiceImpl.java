@@ -256,7 +256,7 @@ public class DataMaskServiceImpl implements DataMaskService {
                 }
             }
             columns = columns.substring(1);
-            identify.setColomns(columns);
+            identify.setColumns(columns);
             identify.setStatus(TaskStatusEnum.DONE.getCode());
             identifyMapper.updateById(identify);
         } catch (Exception e) {
@@ -280,7 +280,7 @@ public class DataMaskServiceImpl implements DataMaskService {
                 }
             }
             columns = columns.substring(1);
-            identify.setColomns(columns);
+            identify.setColumns(columns);
             identify.setStatus(TaskStatusEnum.DONE.getCode());
             identifyMapper.updateById(identify);
 
