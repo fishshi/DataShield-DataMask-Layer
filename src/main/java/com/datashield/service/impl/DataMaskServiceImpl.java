@@ -1,6 +1,7 @@
 package com.datashield.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.datashield.entity.Identify;
 import com.datashield.entity.Task;
 import com.datashield.enums.DataMaskRuleEnum;
 import com.datashield.enums.TaskStatusEnum;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.datashield.entity.UserRemoteDatabase;
+import com.datashield.mapper.IdentifyMapper;
 import com.datashield.mapper.RemoteDataMapper;
 import com.datashield.mapper.TaskMapper;
 import com.datashield.service.DataMaskService;
@@ -28,12 +30,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class DataMaskServiceImpl implements DataMaskService {
-
     @Autowired
     private TaskMapper taskMapper;
 
     @Autowired
     private RemoteDataMapper remoteDataMapper;
+
+    @Autowired
+    private IdentifyMapper identifyMapper;
 
     @Override
     public void startTask(Long taskId) {
@@ -60,6 +64,7 @@ public class DataMaskServiceImpl implements DataMaskService {
         if (remoteDatabase == null) {
             task.setStatus(TaskStatusEnum.ERROR.getCode());
             taskMapper.updateById(task);
+            return;
         }
 
         // 3. 连接远程数据库
@@ -217,6 +222,73 @@ public class DataMaskServiceImpl implements DataMaskService {
             // 更新任务状态为失败
             task.setStatus(TaskStatusEnum.ERROR.getCode());
             taskMapper.updateById(task);
+        }
+    }
+
+    @Override
+    public void startIdentify(Long identifyId) {
+        Runnable runnable = () -> {
+            Identify identify = identifyMapper.selectById(identifyId);
+            if (identify.getIsRemote() == 0) {
+                identifyLocalData(identify);
+            } else {
+                identifyRemoteData(identify);
+            }
+        };
+        VirtualThreadPoolUtil.submit(runnable);
+    }
+
+    @Override
+    public void identifyRemoteData(Identify identify) {
+        identify.setStatus(TaskStatusEnum.RUNNING.getCode());
+        identifyMapper.updateById(identify);
+        UserRemoteDatabase remoteDatabase = remoteDataMapper.selectOne(new QueryWrapper<UserRemoteDatabase>()
+                .eq("user_id", identify.getUserId()).eq("db_name", identify.getDbName()));
+        if (remoteDatabase == null) {
+            identify.setStatus(TaskStatusEnum.ERROR.getCode());
+            identifyMapper.updateById(identify);
+            return;
+        }
+        try (Connection conn = UserSqlConnectionUtil.getConnection(remoteDatabase)) {
+            String columns = "";
+            DatabaseMetaData metaData = conn.getMetaData();
+            try (ResultSet rs = metaData.getColumns(identify.getDbName(), null, identify.getTbName(), "%")) {
+                while (rs.next()) {
+                    columns += ("," + rs.getString("COLUMN_NAME"));
+                }
+            }
+            columns = columns.substring(1);
+            identify.setColomns(columns);
+            identify.setStatus(TaskStatusEnum.DONE.getCode());
+            identifyMapper.updateById(identify);
+        } catch (Exception e) {
+            identify.setStatus(TaskStatusEnum.ERROR.getCode());
+            identifyMapper.updateById(identify);
+        }
+    }
+
+    @Override
+    public void identifyLocalData(Identify identify) {
+        identify.setStatus(TaskStatusEnum.RUNNING.getCode());
+        identifyMapper.updateById(identify);
+
+        String fullDbName = identify.getUserId() + "_" + identify.getDbName();
+        try (Connection conn = UserSqlConnectionUtil.getConnection(fullDbName)) {
+            String columns = "";
+            DatabaseMetaData metaData = conn.getMetaData();
+            try (ResultSet rs = metaData.getColumns(fullDbName, null, identify.getTbName(), "%")) {
+                while (rs.next()) {
+                    columns += ("," + rs.getString("COLUMN_NAME"));
+                }
+            }
+            columns = columns.substring(1);
+            identify.setColomns(columns);
+            identify.setStatus(TaskStatusEnum.DONE.getCode());
+            identifyMapper.updateById(identify);
+
+        } catch (Exception e) {
+            identify.setStatus(TaskStatusEnum.ERROR.getCode());
+            identifyMapper.updateById(identify);
         }
     }
 }

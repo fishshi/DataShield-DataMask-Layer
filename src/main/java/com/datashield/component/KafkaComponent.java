@@ -15,7 +15,12 @@ public class KafkaComponent {
     private DataMaskService dataMaskService;
 
     @KafkaListener(topics = "task-topic")
-    public void onMessage(String payload) {
+    public void onTaskMessage(String payload) {
         dataMaskService.startTask(Long.parseLong(payload));
+    }
+
+    @KafkaListener(topics = "identify-topic")
+    public void onIdentifyMessage(String payload) {
+        dataMaskService.startIdentify(Long.parseLong(payload));
     }
 }
