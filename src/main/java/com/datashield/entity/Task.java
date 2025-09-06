@@ -31,6 +31,11 @@ public class Task {
     private Long userId;
 
     /**
+     * 任务名称
+     */
+    private String taskName;
+
+    /**
      * 是否为远程数据库
      */
     private Integer isRemote;

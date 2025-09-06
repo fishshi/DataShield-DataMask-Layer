@@ -87,11 +87,10 @@ public class DataMaskServiceImpl implements DataMaskService {
                 // 7. 检查目标表是否存在，不存在则创建
                 String targetTable = task.getTargetTable();
                 DatabaseMetaData metaData = connection.getMetaData();
-                try (ResultSet tables = metaData.getTables(null, null, targetTable, null)) {
+                try (ResultSet tables = metaData.getTables(connection.getCatalog(), null, targetTable, new String[] { "TABLE" })) {
                     if (!tables.next()) {
                         // 创建目标表（结构同原表）
-                        String createSql = "CREATE TABLE " + targetTable + " AS SELECT * FROM " + task.getDbTable()
-                                + " WHERE 1=0";
+                        String createSql = "CREATE TABLE " + targetTable + " LIKE " + task.getDbTable();
                         try (Statement stmt = connection.createStatement()) {
                             stmt.executeUpdate(createSql);
                         }
@@ -171,11 +170,10 @@ public class DataMaskServiceImpl implements DataMaskService {
                 // 7. 检查目标表是否存在，不存在则创建
                 String targetTable = task.getTargetTable();
                 DatabaseMetaData metaData = connection.getMetaData();
-                try (ResultSet tables = metaData.getTables(null, null, targetTable, null)) {
+                try (ResultSet tables = metaData.getTables(connection.getCatalog(), null, targetTable, new String[] { "TABLE" })) {
                     if (!tables.next()) {
                         // 创建目标表（结构同原表）
-                        String createSql = "CREATE TABLE " + targetTable + " AS SELECT * FROM " + task.getDbTable()
-                                + " WHERE 1=0";
+                        String createSql = "CREATE TABLE " + targetTable + " LIKE " + task.getDbTable();
                         try (Statement stmt = connection.createStatement()) {
                             stmt.executeUpdate(createSql);
                         }
