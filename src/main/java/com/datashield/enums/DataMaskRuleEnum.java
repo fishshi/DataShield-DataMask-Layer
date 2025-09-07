@@ -13,11 +13,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum DataMaskRuleEnum {
-    EMAIL_MASK(1, "邮箱脱敏"),
-    PHONE_MASK(2, "手机号脱敏"),
-    ID_CARD_MASK(3, "身份证脱敏"),
-    NAME_MASK(4, "姓名脱敏"),
-    CREDIT_CARD_MASK(5, "银行卡脱敏");
+    MASK(1, "掩码"),
+    HASH(2, "哈希"),
+    ENCRYPT(3, "加密");
 
     private final int code;
     private final String description;
