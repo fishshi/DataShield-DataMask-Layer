@@ -84,17 +84,15 @@ public class DataMaskServiceImpl implements DataMaskService {
             try (PreparedStatement selectStmt = connection.prepareStatement(selectSql);
                     ResultSet resultSet = selectStmt.executeQuery()) {
 
-                // 7. 检查目标表是否存在，不存在则创建
+                // 7. 重新创建目标表
                 String targetTable = task.getTargetTable();
-                DatabaseMetaData metaData = connection.getMetaData();
-                try (ResultSet tables = metaData.getTables(connection.getCatalog(), null, targetTable, new String[] { "TABLE" })) {
-                    if (!tables.next()) {
-                        // 创建目标表（结构同原表）
-                        String createSql = "CREATE TABLE " + targetTable + " LIKE " + task.getDbTable();
-                        try (Statement stmt = connection.createStatement()) {
-                            stmt.executeUpdate(createSql);
-                        }
-                    }
+                String dropSql = "DROP TABLE IF EXISTS " + targetTable;
+                try (Statement stmt = connection.createStatement()) {
+                    stmt.executeUpdate(dropSql);
+                }
+                String createSql = DataMaskUtil.getBuildTableSql(connection, task.getDbTable(), targetTable);
+                try (Statement stmt = connection.createStatement()) {
+                    stmt.executeUpdate(createSql);
                 }
 
                 // 8. 执行数据脱敏并插入目标表
@@ -167,17 +165,15 @@ public class DataMaskServiceImpl implements DataMaskService {
             try (PreparedStatement selectStmt = connection.prepareStatement(selectSql);
                     ResultSet resultSet = selectStmt.executeQuery()) {
 
-                // 7. 检查目标表是否存在，不存在则创建
+                // 7. 重新创建目标表
                 String targetTable = task.getTargetTable();
-                DatabaseMetaData metaData = connection.getMetaData();
-                try (ResultSet tables = metaData.getTables(connection.getCatalog(), null, targetTable, new String[] { "TABLE" })) {
-                    if (!tables.next()) {
-                        // 创建目标表（结构同原表）
-                        String createSql = "CREATE TABLE " + targetTable + " LIKE " + task.getDbTable();
-                        try (Statement stmt = connection.createStatement()) {
-                            stmt.executeUpdate(createSql);
-                        }
-                    }
+                String dropSql = "DROP TABLE IF EXISTS " + targetTable;
+                try (Statement stmt = connection.createStatement()) {
+                    stmt.executeUpdate(dropSql);
+                }
+                String createSql = DataMaskUtil.getBuildTableSql(connection, task.getDbTable(), targetTable);
+                try (Statement stmt = connection.createStatement()) {
+                    stmt.executeUpdate(createSql);
                 }
 
                 // 8. 执行数据脱敏并插入目标表
