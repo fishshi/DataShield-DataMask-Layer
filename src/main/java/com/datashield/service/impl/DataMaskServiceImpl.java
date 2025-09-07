@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class DataMaskServiceImpl implements DataMaskService {
     public void maskRemoteData(Task task) {
         // 1. 更新任务状态为执行中
         task.setStatus(TaskStatusEnum.RUNNING.getCode());
+        task.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         taskMapper.updateById(task);
 
         // 2. 根据用户ID和数据库名获取远程数据库信息
@@ -63,6 +65,7 @@ public class DataMaskServiceImpl implements DataMaskService {
                 .eq("user_id", task.getUserId()).eq("db_name", task.getDbName()));
         if (remoteDatabase == null) {
             task.setStatus(TaskStatusEnum.ERROR.getCode());
+            task.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             taskMapper.updateById(task);
             return;
         }
@@ -129,11 +132,13 @@ public class DataMaskServiceImpl implements DataMaskService {
 
             // 9. 更新任务状态为成功
             task.setStatus(TaskStatusEnum.DONE.getCode());
+            task.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             taskMapper.updateById(task);
         } catch (Exception e) {
             log.error("远程数据脱敏任务执行失败, 任务ID: " + task.getId(), e);
             // 更新任务状态为失败
             task.setStatus(TaskStatusEnum.ERROR.getCode());
+            task.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             taskMapper.updateById(task);
         }
     }
@@ -145,6 +150,7 @@ public class DataMaskServiceImpl implements DataMaskService {
     public void maskLocalData(Task task) {
         // 1. 更新任务状态为运行中
         task.setStatus(TaskStatusEnum.RUNNING.getCode());
+        task.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         taskMapper.updateById(task);
 
         String fullDbName = task.getUserId() + "_" + task.getDbName();
@@ -210,11 +216,13 @@ public class DataMaskServiceImpl implements DataMaskService {
 
             // 9. 更新任务状态为成功
             task.setStatus(TaskStatusEnum.DONE.getCode());
+            task.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             taskMapper.updateById(task);
         } catch (Exception e) {
             log.error("远程数据脱敏任务执行失败, 任务ID: " + task.getId(), e);
             // 更新任务状态为失败
             task.setStatus(TaskStatusEnum.ERROR.getCode());
+            task.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             taskMapper.updateById(task);
         }
     }

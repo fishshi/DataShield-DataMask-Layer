@@ -1,5 +1,7 @@
 package com.datashield.entity;
 
+import java.sql.Timestamp;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -75,4 +77,9 @@ public class Task {
      * 任务状态, {@link TaskStatusEnum}
      */
     private Integer status;
+
+    /**
+     * 最后更新时间
+     */
+    private Timestamp updateTime;
 }
