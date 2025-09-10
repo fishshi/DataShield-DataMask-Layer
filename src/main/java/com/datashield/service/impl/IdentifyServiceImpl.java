@@ -3,6 +3,7 @@ package com.datashield.service.impl;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,11 +47,13 @@ public class IdentifyServiceImpl implements IdentifyService {
     @Override
     public void identifyRemoteData(Identify identify) {
         identify.setStatus(TaskStatusEnum.RUNNING.getCode());
+        identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         identifyMapper.updateById(identify);
         UserRemoteDatabase remoteDatabase = remoteDataMapper.selectOne(new QueryWrapper<UserRemoteDatabase>()
                 .eq("user_id", identify.getUserId()).eq("db_name", identify.getDbName()));
         if (remoteDatabase == null) {
             identify.setStatus(TaskStatusEnum.ERROR.getCode());
+            identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             identifyMapper.updateById(identify);
             return;
         }
@@ -65,9 +68,11 @@ public class IdentifyServiceImpl implements IdentifyService {
             columns = columns.substring(1);
             identify.setColumns(columns);
             identify.setStatus(TaskStatusEnum.DONE.getCode());
+            identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             identifyMapper.updateById(identify);
         } catch (Exception e) {
             identify.setStatus(TaskStatusEnum.ERROR.getCode());
+            identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             identifyMapper.updateById(identify);
         }
     }
@@ -75,6 +80,7 @@ public class IdentifyServiceImpl implements IdentifyService {
     @Override
     public void identifyLocalData(Identify identify) {
         identify.setStatus(TaskStatusEnum.RUNNING.getCode());
+        identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         identifyMapper.updateById(identify);
 
         String fullDbName = identify.getUserId() + "_" + identify.getDbName();
@@ -89,10 +95,12 @@ public class IdentifyServiceImpl implements IdentifyService {
             columns = columns.substring(1);
             identify.setColumns(columns);
             identify.setStatus(TaskStatusEnum.DONE.getCode());
+            identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             identifyMapper.updateById(identify);
 
         } catch (Exception e) {
             identify.setStatus(TaskStatusEnum.ERROR.getCode());
+            identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             identifyMapper.updateById(identify);
         }
     }
