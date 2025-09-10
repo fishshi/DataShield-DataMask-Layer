@@ -9,7 +9,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum DatabaseTypeEnum {
-    MYSQL(1);
+    MYSQL(1),
+    POSTGRESQL(2),
+    ORACLE(3),
+    SQLSERVER(4);
 
     private final int code;
 

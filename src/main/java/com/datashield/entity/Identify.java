@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 
 import com.datashield.enums.TaskStatusEnum;
 
+/**
+ * 识别任务实体类
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

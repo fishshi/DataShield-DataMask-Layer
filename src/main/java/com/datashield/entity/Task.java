@@ -15,7 +15,7 @@ import com.datashield.enums.ScheduleTypeEnum;
 import com.datashield.enums.TaskStatusEnum;
 
 /**
- * 任务实体类
+ * 脱敏任务实体类
  */
 @Data
 @AllArgsConstructor

@@ -9,12 +9,11 @@ import com.datashield.enums.DatabaseTypeEnum;
 
 /**
  * 用户数据库连接工具类
- * TODO: 本地改用用户 MySQL 服务器, 与业务服务器分开
  */
 public class UserSqlConnectionUtil {
     /**
      * 获取用户本地 MySQL 数据库连接
-     * 
+     *
      * @return 数据库连接
      */
     public static Connection getConnection(String dbName) throws SQLException {
@@ -34,6 +33,15 @@ public class UserSqlConnectionUtil {
         if (userRemoteDatabase.getDbType() == DatabaseTypeEnum.MYSQL.getCode()) {
             jdbcUrl = "jdbc:mysql://" + userRemoteDatabase.getDbHost() + ":" + userRemoteDatabase.getDbPort()
                     + "/" + userRemoteDatabase.getDbName();
+        } else if (userRemoteDatabase.getDbType() == DatabaseTypeEnum.POSTGRESQL.getCode()) {
+            jdbcUrl = "jdbc:postgresql://" + userRemoteDatabase.getDbHost() + ":" + userRemoteDatabase.getDbPort()
+                    + "/" + userRemoteDatabase.getDbName();
+        } else if (userRemoteDatabase.getDbType() == DatabaseTypeEnum.ORACLE.getCode()) {
+            jdbcUrl = "jdbc:oracle:thin:@" + userRemoteDatabase.getDbHost() + ":" + userRemoteDatabase.getDbPort()
+                    + ":" + userRemoteDatabase.getDbName();
+        } else if (userRemoteDatabase.getDbType() == DatabaseTypeEnum.SQLSERVER.getCode()) {
+            jdbcUrl = "jdbc:sqlserver://" + userRemoteDatabase.getDbHost() + ":" + userRemoteDatabase.getDbPort()
+                    + ";databaseName=" + userRemoteDatabase.getDbName();
         } else {
             return null;
         }
