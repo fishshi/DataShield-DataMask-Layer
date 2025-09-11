@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import com.datashield.enums.TaskStatusEnum;
 import com.datashield.mapper.IdentifyMapper;
 import com.datashield.mapper.RemoteDataMapper;
 import com.datashield.service.IdentifyService;
+import com.datashield.util.IdentifyUtil;
 import com.datashield.util.UserSqlConnectionUtil;
 import com.datashield.util.VirtualThreadPoolUtil;
 
@@ -58,15 +61,14 @@ public class IdentifyServiceImpl implements IdentifyService {
             return;
         }
         try (Connection conn = UserSqlConnectionUtil.getConnection(remoteDatabase)) {
-            String columns = "";
+            List<String> columns = new ArrayList<>();
             DatabaseMetaData metaData = conn.getMetaData();
             try (ResultSet rs = metaData.getColumns(identify.getDbName(), null, identify.getTbName(), "%")) {
                 while (rs.next()) {
-                    columns += ("," + rs.getString("COLUMN_NAME"));
+                    columns.add(rs.getString("COLUMN_NAME"));
                 }
             }
-            columns = columns.substring(1);
-            identify.setColumns(columns);
+            identify.setColumns(IdentifyUtil.identifyData(columns));
             identify.setStatus(TaskStatusEnum.DONE.getCode());
             identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             identifyMapper.updateById(identify);
@@ -85,15 +87,14 @@ public class IdentifyServiceImpl implements IdentifyService {
 
         String fullDbName = identify.getUserId() + "_" + identify.getDbName();
         try (Connection conn = UserSqlConnectionUtil.getConnection(fullDbName)) {
-            String columns = "";
+            List<String> columns = new ArrayList<>();
             DatabaseMetaData metaData = conn.getMetaData();
             try (ResultSet rs = metaData.getColumns(fullDbName, null, identify.getTbName(), "%")) {
                 while (rs.next()) {
-                    columns += ("," + rs.getString("COLUMN_NAME"));
+                    columns.add(rs.getString("COLUMN_NAME"));
                 }
             }
-            columns = columns.substring(1);
-            identify.setColumns(columns);
+            identify.setColumns(IdentifyUtil.identifyData(columns));
             identify.setStatus(TaskStatusEnum.DONE.getCode());
             identify.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             identifyMapper.updateById(identify);
