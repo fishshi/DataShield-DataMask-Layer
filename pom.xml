@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.datashield</groupId>
-	<artifactId>datashield-datamask-layer</artifactId>
+	<artifactId>datashield-work-layer</artifactId>
 	<version>1.0.0</version>
-	<name>datashield-datamask-layer</name>
+	<name>datashield-work-layer</name>
 	<description>数据之盾——隐私数据脱敏管理平台——数据脱敏层</description>
 	<licenses>
 		<license>
